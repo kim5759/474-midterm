@@ -31,11 +31,10 @@ window.onload = function () {
         .then((d) => this.makeScatterPlot(d))
 }
 
-
 // make scatter plot with trend line
 function makeScatterPlot(csvData) {
     // assign data as global variable; filter out unplottable values
-    data = csvData.filter((data) => {return data["Sp. Def"] != "NA" && data.Total != "NA"})
+    data = csvData.filter((data) => { return data["Sp. Def"] != "NA" && data.Total != "NA" })
 
     let dropDown = d3.select("#filter").append("select")
         .attr("name", "Generation");
@@ -57,40 +56,38 @@ function makeScatterPlot(csvData) {
     plotData(mapFunctions);
 
     // draw title and axes labels
-    makeLabels(svgContainer, msm, "Pokemon: Special Defense vs Total Stats",'Sp. Def','Total');
-    
-    let distinctYears = [...new Set(data.map(d => d.Generation))];
-    let defaultYear = 1;
+    makeLabels(svgContainer, msm, "Pokemon: Special Defense vs Total Stats", 'Sp. Def', 'Total');
+
+    let distinctGen = [...new Set(data.map(d => d.Generation))];
+    let defaultGen = 1;
 
     let distinctLegendary = [...new Set(data.map(d => d.Legendary))];
     let defaultLegendary = true;
 
     let options = dropDown.selectAll("option")
-           .data(distinctYears)
-           .enter()
-           .append("option")
-           .text(function (d) { return d; })
-           .attr("value", function (d) { return d; })
-           .attr("selected", function(d){ return d == defaultYear; })
-           
-    showCircles(dropDown.node());//this will filter initially
-    dropDown.on("change", function() {
+        .data(distinctGen)
+        .enter()
+        .append("option")
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; })
+        .attr("selected", function (d) { return d == defaultGen; })
+
+    let options2 = dropDown2.selectAll("option")
+        .data(distinctLegendary)
+        .enter()
+        .append("option")
+        .text(function (d) { return d; })
+        .attr("value", function (d) { return d; })
+        .attr("selected", function (d) { return d == defaultLegendary; })
+
+    showCircles(dropDown.node());
+    dropDown.on("change", function () {
         showCircles(this)
     });
-    
-    let options2 = dropDown2.selectAll("option")
-           .data(distinctLegendary)
-           .enter()
-           .append("option")
-           .text(function (d) { return d; })
-           .attr("value", function (d) { return d; })
-           .attr("selected", function(d){ return d == defaultLegendary; })   
 
-    showCircles2(dropDown2.node());//this will filter initially
-        dropDown2.on("change", function() {
-            showCircles2(this)
+    dropDown2.on("change", function () {
+        showCircles2(this)
     });
-
 }
 
 function showCircles(me) {
@@ -100,28 +97,28 @@ function showCircles(me) {
 
     svgContainer.selectAll(".circles")
         .data(data)
-        .filter(function(d) {return selected != d.Generation;})
+        .filter(function (d) { return selected != d.Generation; })
         .attr("display", displayOthers);
-        
+
     svgContainer.selectAll(".circles")
         .data(data)
-        .filter(function(d) {return selected == d.Generation;})
+        .filter(function (d) { return selected == d.Generation; })
         .attr("display", display);
 }
 
 function showCircles2(me) {
-    let selected = me.value;
+    let selected2 = me.value;
     displayOthers = me.checked ? "inline" : "none";
     display = me.checked ? "none" : "inline";
 
     svgContainer.selectAll(".circles")
         .data(data)
-        .filter(function(d) {return selected != d.Legendary;})
+        .filter(function (d) { return selected2 != d.Legendary; })
         .attr("display", displayOthers);
-        
+
     svgContainer.selectAll(".circles")
         .data(data)
-        .filter(function(d) {return selected == d.Legendary;})
+        .filter(function (d) { return selected2 == d.Legendary; })
         .attr("display", display);
 }
 
@@ -154,10 +151,6 @@ function plotData(map) {
     })
     let pop_data = data.map((row) => +row["Type 1"]);
     let pop_limits = d3.extent(pop_data);
-    // make size scaling function for population
-    //let pop_map_func = d3.scaleSqrt()
-    //    .domain([pop_limits[0], pop_limits[1]])
-    //    .range([3, 50]);
 
     // mapping functions
     let xMap = map.x;
@@ -168,11 +161,10 @@ function plotData(map) {
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-    // let toolTipChart = div.append("div").attr("id", "tipChart")
     let toolChart = div.append('svg')
         .attr('width', small_msm.width)
         .attr('height', small_msm.height)
-    
+
     const colors = {
         "Bug": "#4E79A7",
         "Dark": "#A0CBE8",
@@ -192,12 +184,12 @@ function plotData(map) {
         "Steel": "#BAB0AC",
         "Water": "#D37295"
     }
-    
-    var cValue = function(d) { return d["Type 1"];}
 
-    var newType = [...new Set(data.map(function(d) { return d["Type 1"] }))];
-    var firstOccurrence = newType.map(function(d) {
-        return data.find(function(e) {
+    var cValue = function (d) { return d["Type 1"]; }
+
+    var newType = [...new Set(data.map(function (d) { return d["Type 1"] }))];
+    var firstOccurrence = newType.map(function (d) {
+        return data.find(function (e) {
             return e["Type 1"] === d
         })
     });
@@ -210,7 +202,8 @@ function plotData(map) {
         .attr('cx', xMap)
         .attr('cy', yMap)
         .attr('r', 8)
-        .attr('fill', function(d) { return colors[cValue(d)];})
+        .attr('stroke', 'black')
+        .attr('fill', function (d) { return colors[cValue(d)]; })
         .attr("class", "circles")
         // add tooltip functionality to points
         .on("mouseover", (d) => {
@@ -219,11 +212,11 @@ function plotData(map) {
                 .duration(200)
                 .style("opacity", .9);
             div.html(d.Name + "<br/>" +
-                     d["Type 1"] + "<br/>" +
-                     d["Type 2"])
+                d["Type 1"] + "<br/>" +
+                d["Type 2"])
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
-            
+
         })
         .on("mouseout", (d) => {
             div.transition()
@@ -236,15 +229,15 @@ function plotData(map) {
         .data(firstOccurrence)
         .enter().append("g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+        .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; });
 
     // draw legend colored rectangles
     legend.append("rect")
         .attr("x", msm.width - 20)
         .attr("y", 92)
-        .attr("width",18)
-        .attr("height",18)
-        .style("fill", function(d) { return colors[d["Type 1"]];});
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", function (d) { return colors[d["Type 1"]]; });
 
     // draw legend text
     legend.append("text")
@@ -252,8 +245,8 @@ function plotData(map) {
         .attr("y", 100)
         .attr("dy", ".35em")
         .style("text-anchor", "end")
-        .text(function(d) { return d["Type 1"];});
-    
+        .text(function (d) { return d["Type 1"]; });
+
 }
 
 // draw the axes and ticks
