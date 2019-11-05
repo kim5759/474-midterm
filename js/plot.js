@@ -31,7 +31,6 @@ window.onload = function () {
         .then((d) => this.makeScatterPlot(d))
 }
 
-// make scatter plot with trend line
 function makeScatterPlot(csvData) {
     // assign data as global variable; filter out unplottable values
     data = csvData.filter((data) => { return data["Sp. Def"] != "NA" && data.Total != "NA" })
