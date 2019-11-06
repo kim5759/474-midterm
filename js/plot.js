@@ -27,7 +27,7 @@ window.onload = function () {
         .attr('width', msm.width)
         .attr('height', msm.height);
     // d3.csv is basically fetch but it can be be passed a csv file as a parameter
-    d3.csv("/data/pokemon.csv")
+    d3.csv("./data/pokemon.csv")
         .then((d) => this.makeScatterPlot(d))
 }
 
@@ -84,6 +84,7 @@ function makeScatterPlot(csvData) {
         showCircles(this)
     });
 
+    showCircles2(dropDown2.node());
     dropDown2.on("change", function () {
         showCircles2(this)
     });
