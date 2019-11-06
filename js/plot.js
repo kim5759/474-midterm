@@ -57,14 +57,14 @@ function makeScatterPlot(csvData) {
     // draw title and axes labels
     makeLabels(svgContainer, msm, "Pokemon: Special Defense vs Total Stats", 'Sp. Def', 'Total');
 
-    let distinctGen = [...new Set(data.map(d => d.Generation))];
-    let defaultGen = 1;
+    let genField = ["all", 1, 2, 3, 4, 5, 6];
+    let defaultGen = "all";
 
-    let distinctLegendary = [...new Set(data.map(d => d.Legendary))];
-    let defaultLegendary = true;
+    let legField = ["all", true, false];
+    let defaultLeg = "all";
 
     let options = dropDown.selectAll("option")
-        .data(distinctGen)
+        .data(genField)
         .enter()
         .append("option")
         .text(function (d) { return d; })
@@ -72,19 +72,18 @@ function makeScatterPlot(csvData) {
         .attr("selected", function (d) { return d == defaultGen; })
 
     let options2 = dropDown2.selectAll("option")
-        .data(distinctLegendary)
+        .data(legField)
         .enter()
         .append("option")
         .text(function (d) { return d; })
         .attr("value", function (d) { return d; })
-        .attr("selected", function (d) { return d == defaultLegendary; })
+        .attr("selected", function (d) { return d == defaultLeg; })
 
     showCircles(dropDown.node());
     dropDown.on("change", function () {
         showCircles(this)
     });
 
-    showCircles2(dropDown2.node());
     dropDown2.on("change", function () {
         showCircles2(this)
     });
@@ -94,6 +93,12 @@ function showCircles(me) {
     let selected = me.value;
     displayOthers = me.checked ? "inline" : "none";
     display = me.checked ? "none" : "inline";
+
+    if (genField = "all") {
+        svgContainer.selectAll(".circles")
+        .data(data)
+        .attr("display", display);
+    }
 
     svgContainer.selectAll(".circles")
         .data(data)
